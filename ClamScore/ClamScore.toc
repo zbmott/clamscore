@@ -1,0 +1,8 @@
+## Interface: 11500
+## Title: ClamScore
+## Notes:
+## Author: Metaslave-ChaosBolt
+## Version: 0.0
+
+ClamScore.lua
+data/ChaosBolt.lua
