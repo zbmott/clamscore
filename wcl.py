@@ -1,8 +1,9 @@
-import aiohttp, datetime, json
+import aiohttp, datetime, json, sys
 
 
 class WCLException(Exception):
-    def __init__(self, details):
+    def __init__(self, status, details):
+        self.status = status
         self.details = details
 
 
@@ -27,6 +28,9 @@ class WCL:
         url = 'https://www.warcraftlogs.com/oauth/token'
         auth = aiohttp.BasicAuth(self.client_id, self.client_secret)
         async with self.session.post(url, data={'grant_type': 'client_credentials'}, auth=auth) as resp:
+            if not (200 <= resp.status < 300):
+                raise WCLException(resp.status, await resp.text())
+
             data = await resp.json()
 
             self.session._default_headers['Authorization'] = f"Bearer {data['access_token']}"
@@ -39,8 +43,8 @@ class WCL:
         async with self.session.post(self.base_url, json={'query': query, 'variables': vars}) as resp:
             data = await resp.json()
 
-            if 'error' in data:
-                raise WCLException(data)
+            if 'error' in data or not (200 <= resp.status < 300):
+                raise WCLException(resp.status, data)
 
             return data
 

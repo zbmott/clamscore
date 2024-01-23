@@ -21,6 +21,7 @@ async def main(args):
                 try:
                     data = await client.allCharacters(server_slug, region, 2007, page=page, limit=100)
                 except wcl.WCLException as wcle:
+                    print(f"Error {wcle.status}\n")
                     pprint.pprint(wcle.details)
                     return
 
@@ -34,7 +35,7 @@ async def main(args):
 
                 page += 1
 
-        outfile.write('\n}\n')
+        #outfile.write('\n}\n')
 
 
 def format_ranking(r):
@@ -44,4 +45,6 @@ def format_ranking(r):
 
 
 if __name__ == '__main__':
-    asyncio.run(main(sys.argv[1:]))
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(main(sys.argv[1:]))
